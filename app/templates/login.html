@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+<!-- get the error message from wtf forms -->
+{% from "_formhelpers.html" import render_field %}
+<!-- title is login -->
+{% block title %}  {{title}}  {% endblock title %} 
+{% block content %}
+
+<form validate action="" id="login" method="POST">  
+        <!-- Make the secret key work -->
+        {{ form.csrf_token }}
+        {{ render_field(form.username_or_email) }}
+        {{ render_field(form.password) }}
+<input type="submit" value="Submit">  
+
+
+
+
+        <!--make flash message work-->
+        {%with messages = get_flashed_messages()%}
+        {%if messages %}
+                <ul class=flashes>
+                {%for message in messages%}
+                        <p1>  {{message}} </p1>
+                {% endfor %}
+                </ul>
+        {% endif %}
+        {% endwith %}
+</form>
+
+<h1> <a href="{{ url_for('mail.request_reset_password')  }}">  forgot password? </a> </h1>
+
+ {% endblock content %}
+

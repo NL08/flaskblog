@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% if title %}
+<title> flashblog {{+ title}} </title>
+    <!-- The title will say home -->
+    {% else %} 
+           {{ 'home' }}
+    {% endif %}
+</head>
+<body> 
+
+
+
+
+
+
+    {% block content %} 
+ 
+    {% endblock content %}
+
+  
+   
+
+
+    {% include 'navbar.html' %}
+
+    <h2>
+         <!-- action=, sends you to /search route -->
+        <form method="POST" action="{{ url_for('auth.search') }}"> 
+            {{ form.csrf_token }}  
+            {{ (form.searched) }}   
+            <button type="submit">search</button>
+        </form>    
+       
+    </h2>
+   
+     <!-- From home. Prints userpost information -->
+    {% block post_content %}    
+    {% endblock post_content %}
+</body>
+</html>
+
+
+
+  
+
+
+

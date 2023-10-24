@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+ <!-- title is flashblog -->
+{% block title %} {{title}} {% endblock title %} 
+{% block post_content %}    
+
+    {% if posts %} 
+
+        {% for post in posts %}
+            <!--  The line url_for... is = to ("/post/<int:post_id>") in routes.py-->
+            <!--  why do I need post_id = post.id'?, Because I am looping to get the post.id's -->    
+            <h2> <a href="{{ url_for ('postinfo.post', post_id = post.id) }}"> {{post.title}} </a> </h2>
+        {{ post.content }}
+        {{ post.date_posted }}
+        {% endfor %}
+    {% endif %}
+    
+    <!--make flash message work-->
+    {%with messages = get_flashed_messages()%}
+    {%if messages %}
+        <ul class=flashes>
+        {%for message in messages%}
+        <p1>  {{message}} </p1>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+
+
+    
+{% endblock post_content %}

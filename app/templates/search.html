@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %} {{title}} {% endblock title %} 
+{% block content %}
+
+ 
+
+
+    {% if search_results %}
+
+        <br> <h2> You searched for... </h2> </br>
+        {{ search_results }}
+
+  
+
+        {% for post in search_results %}
+            <!-- create a new_form for post information called post.html and rename post.html to new_post.html? -->
+            <a href="{{ url_for('postinfo.post', post_id = post.id) }}"> {{ post.title }} </a>
+        {% endfor %}
+
+    {% else %}    
+        <h2> Your search did not find anything. Please try again. </h2>
+    {% endif %}
+
+
+    <!--make flash message work-->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <p1>  {{message}} </p1>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}    
+
+{% endblock content %}      

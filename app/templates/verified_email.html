@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+<!--get the error message from wtf forms -->
+{% from "_formhelpers.html" import render_field %}
+{% block title %} {{title}} {% endblock title %} 
+{%block content%}
+    <!-- Once you get the error message from ( "_formhelpers.html" import render_field) , you use novalidate to 
+    get the error message from wtf forms and makes it show up on the screen. %} -->
+    <form validate action="" id="new_post_or_edit_post" method="POST">  
+        <!-- Make the secret key work -->
+        {{form.csrf_token}}
+        <h1> You have clicked on the link in your email and now succesfully registered.  </h1>
+    </form>  
+
+
+
+    <!--make flash message work-->
+    {%with messages = get_flashed_messages()%}
+    {%if messages %}
+        <ul class=flashes>
+        {%for message in messages%}
+        <p1>  {{message}} </p1>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+    
+
+
+{%endblock content%}      
+
+          

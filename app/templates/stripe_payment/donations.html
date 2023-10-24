@@ -1,0 +1,31 @@
+{% block title %} {{ title }} {% endblock title %} 
+
+
+{%extends "layout.html"%}
+
+{% block content %}
+<!--get the error message from wtf forms -->
+{% from "_formhelpers.html" import render_field %}
+    <form method="POST" action="">
+        {{ form.csrf_token }} 
+        <p> Email </p>
+        {{(form.email)}}
+        <p>  Donate </p>
+          <!--needs to be at least .50 cents because stripe doesn't allow less  -->
+        <p> <input type="number" name="number" step=".01" min=.5>   </p>
+        <p> <input type="submit" value="Donate"/> </p>
+    </form>
+
+    <!--make flash message work-->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <p1>  {{message}} </p1>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}    
+
+ 
+{% endblock content %}

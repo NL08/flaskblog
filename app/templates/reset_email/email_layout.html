@@ -1,0 +1,21 @@
+
+
+
+<!-- email_layout is to avoid having the navbar + etc--> 
+
+<!DOCTYPE html>
+<html>
+    <head>
+    {% if title %}
+<title> flashblog {{+ title}} </title>
+    <!-- The title will say home -->
+    {% else %} 
+        {{ 'home' }}
+    {% endif %}
+    </head>
+    <body>
+ 
+        {% block content %}      
+        {% endblock content %}
+    </body>
+</html>

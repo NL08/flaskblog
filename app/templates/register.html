@@ -1,0 +1,36 @@
+{%extends "layout.html"%}
+<!--get the error message from wtf forms -->
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %} {{title}} {% endblock title %} 
+{%block content%}
+    <!-- Once you get the error message from ( "_formhelpers.html" import render_field) , you use novalidate to 
+     get the error message from wtf forms and makes it show up on the screen. %}
+    validate makes sure you have the correct route most of the time you can just leave it blank.
+    -->
+    <form validate ="" id="register" method="POST"> 
+        <!-- Make the secret key work -->
+        {{ form.csrf_token }} 
+        <!--the "render_field" puts -->
+        {{ render_field(form.username) }}
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        {{ render_field(form.confirm_password) }}
+        <input type="submit" value="Submit">
+    </form>
+    
+
+    <!--make flash message work-->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <p1>  {{message}} </p1>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}    
+
+{%endblock content%}      
+
+   
