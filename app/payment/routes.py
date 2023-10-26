@@ -1,6 +1,5 @@
-
 import stripe
-from flask import (Blueprint, abort, flash, redirect, render_template, request,
+from flask import (Blueprint,  flash, redirect, render_template, request,
                    url_for)
 
 from app.payment.forms import EmailForm, EmptyForm

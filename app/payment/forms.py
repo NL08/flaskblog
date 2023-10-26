@@ -1,8 +1,8 @@
 # Register forms 
 from flask_wtf import FlaskForm
-from wtforms import DecimalField, validators
+
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length
 
 
 class EmptyForm(FlaskForm):

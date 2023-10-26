@@ -1,6 +1,5 @@
 
-# allow different imports so the code works during pytest + non pytest
-# pytest code
+
 import os
 
 from flask import flash
@@ -53,37 +52,4 @@ def add_foreign_key(email_form):
 
 
 
-
-
-
-#def PaymentTest_add_foreign_key(email_form):
-'''
-    If the email have the same value add the foreign key in the payment table.
-    You will always have a registered account when adding Foreign key. 
-    '''
-
-
-    # if a email exists in the payment table
-#    try:
-#        payment_db = Payments.query.filter_by(email=email_form).first() 
-#
-#        payment_db = []# payment doesn't exist
-
-    # if email exists in the User table
-#    try:
-#        user_db = User.query.filter_by(email=email_form).first() 
-#    except:
-#        user_db = [] # user doesn't exist
-
-    # add the foreign key if the email exists in the User table and the email exists in the Payment table exists.
-    # Also make sure it is not None.
-#    if user_account_already_exists.email == payment_already_exists_in_db.email and payment_db and user_db :
-        # user.id is the foreign key in the Payment database. You need to manually add FK's.   
-        # The foreign key "user_id = db_payment.paymnent.id", "db_payment.payment.id is equal to the id in User table.
-#        user_db_id =  payment_already_exists_in_db.id
-#        payments = Payments(user_id=user_db_id)
-#        db.session.add(payments)
-#        db.seesion.commit()
-#        flash('sucesss')
-#    else:
-#        flash('failure')
+ 
