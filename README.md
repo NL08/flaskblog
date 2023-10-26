@@ -1,8 +1,8 @@
-## flaskblog ##
+# flaskblog #
 # Here is a blog built using flask #
 
 
-# Here is how you install flaskblog in Visual Studio Code. #
+## Here is how you install flaskblog in Visual Studio Code. ##
 
 1. Clone the project
 2. Create the environment variables.
@@ -21,4 +21,4 @@ For example on windows in VSC type in terminal
 > g$env:FLASK_ENV="pytest"      
 > pytest -q --capture=no  
 
-# There are a few bugs and minor errors. I am fixing them and I cleaning up the code. # 
+## There are a few bugs and minor errors. I am fixing them and I cleaning up the code. ##
