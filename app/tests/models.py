@@ -1,17 +1,13 @@
 # itsdangergous... gives a time sensitive message 
-# make SQLAlchemy work 
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-
 from app import db
 
-
 class UserTest(UserMixin, db.Model):
-
     __tablename__ = 'user_test'
     __bind_key__ = "testing_app_db"
     id = db.Column(db.Integer, primary_key=True)
-    #  unique blocks the same usernames
+    # unique blocks the same usernames
     # I can't have Nullable=False because it will make me add the columns everytime I add a column in User table
     username = db.Column(db.String(80), unique=True)
     hashed_password = db.Column(db.String(128))
@@ -28,11 +24,6 @@ class UserTest(UserMixin, db.Model):
         # This Creates the randomly assigned token for 30 min. This is a string.
         return s.dumps({'Users_id': self.id}).decode('utf-8')
             
- 
- 
-  
- 
-
 class PaymentsTest(db.Model):
     '''
     One to many relationship
@@ -48,8 +39,7 @@ class PaymentsTest(db.Model):
     fk_usertest_id = db.Column(db.Integer, db.ForeignKey('user_test.id'))
     bind_key = "testing_app_db"
 
-
-     # what does this do?
+    # what does this do?
     def __repr__(self):
         return f"<PaymentsTest('{self.email}')>" 
  

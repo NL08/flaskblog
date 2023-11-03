@@ -1,5 +1,3 @@
-import os
-
 from flask_migrate import Migrate
 from app import create_app, get_multiple_configs 
 
@@ -31,14 +29,8 @@ def layout():
 
 
 
-# to run the code
-'''
-To setup the app to run from a specific file type the line below. Only do Once.
-$env:FLASK_APP="wsgi"
-To use the debugger use this line.
-$env:FLASK_ENV="development"
-flask run
-'''
+ 
+ 
 
  
 

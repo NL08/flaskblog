@@ -1,27 +1,10 @@
-# Continue 25:31 https://www.youtube.com/watch?v=803Ei2Sq-Zs
 import os
-# random generator
+# random number generator
 import uuid
-
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
-
-# from werkzeug.datastructures import FileStorage
-
-'''
-# Is there another way to do this.
-# import create_app or app app.elasticsearch... 
-from app import create_app
-# import Config to get create_app to work 
-from app.config import Config
-app = create_app(Config)
-'''
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-
-# make @auth work from userinfo folder in this file 
-auth = Blueprint('auth', __name__, template_folder='templates')
-
 ''' 
 # todo turn into a database why is there no post number like 1st post ever posted in general etc?
 posts = {   
@@ -32,61 +15,39 @@ posts = {
     "date_posted": "March 17 2021" 
 }
 '''
-
-
-''' IMPORTANT flash not working before a redirect why? '''
- 
- 
-
-
-
+auth = Blueprint('auth', __name__, template_folder='templates')
 
 @auth.route("/")
 @auth.route("/home")
 def home():  
-    
-   
-
     posts = Posts.query.all()
-    # add_to_index('F', posts)
     return render_template('home.html', posts=posts, title='home')  
 
-# import db from flaskblog folder in __init__.py
-from app import db, app 
+# import db from flaskblog __init__.py.
+from app import db, app
 from app.auth.forms import FileForm
 from app.models import Posts, User
-
-
 
 @auth.route('/profile/<string:username>', methods = ['GET'])
 def profile(username): 
 
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('profile.html', title='profile',user=user)
-    
 
 
-
-# todo change don't need here?
-# basedir_for_uploads = os.path.abspath(os.path.profilepictures(__file__)
-app.config['UPLOAD_FOLDER'] = r"C:\Users\nmyle\OneDrive\Desktop\flaskcodeusethis\flaskblog2\app\static\profilepictures"
-# remember todo add max file size for uploads
 # I might want to use this route below and the .html name?
 # @auth.route('/upload/profile/<string:username>', methods = ['GET'])
 @auth.route('/upload_picture', methods=['GET', 'POST'])
 def upload_picture():
-    
-    # if the user is not logged in make it so they can't go to the login page. 
     if not current_user.is_authenticated:
         return redirect(url_for('auth.home')) 
     
     form = FileForm()
     if form.validate_on_submit():
         picture_filename = form.image_filename.data     
-         # Make file secure...         
+        # Make file secure...         
         # This makes sure the filename is safe
         filename_is_secure = secure_filename(picture_filename.filename)
-        
         # make the file unique incase someone uploads the same name
         # uuid is a random number generator
         unique_filename = str(uuid.uuid1()) + filename_is_secure
@@ -100,44 +61,10 @@ def upload_picture():
 
     return render_template('upload_picture.html', form=form, title='upload Profile Picture') 
 
-from app.auth.forms import EmptyForm
-
-'''move to different route.py keep with profile.'''
-@auth.route("/followers/<string:username>", methods = ['Get', 'Post'])
-# can if user is None be replaced by @login_required
-@login_required
-def followers(username):
-    form = EmptyForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=username).first_or_404() 	
-        # methods from models.py don't need self
-        is_following = is_following(user)
-        if (is_following == False):
-            current_user.follow(user)
-            db.session.commit()	
-            return render_template( 'followers.html', title='follow', form=form, is_following=is_following, username=user.username)
-        
-        else:
-            current_user.unfollow(user)
-            db.session.commit()
-            return render_template( 'followers.html', title='unfollow', form=form, is_following=is_following, username=user.username )
-
-    return render_template( 'profile.html', title='followers', form=form, username=user.username)
-
-
  
-
-
-
 @auth.route("/about")
 def about():
     return render_template('about.html', title='register')
-
-
-
-
-
-
 
 from app.auth.forms import RegistrationForm
 from argon2 import PasswordHasher
@@ -145,20 +72,18 @@ from app.mail.routes import send_account_registration_email
 
 @auth.route("/register", methods = ['POST', 'GET'])
 def register():
-
     # if the user is logged in make so they can't go to the register page. 
     if current_user.is_authenticated:
         return redirect(url_for(('auth.home')))
     
     form = RegistrationForm()
-    # form.validate_on_submit(): are always the same line of render template to always allow a get request.
     if form.validate_on_submit():
 
         username_form = form.username.data
         email_form = form.email.data
         plaintext_password_form = form.password.data
         confirm_plaintext_password_form = form.confirm_password.data
-        # hash the password I assume you can't turn this into a function  
+
         ph = PasswordHasher()
         hashed_password_form  = ph.hash(plaintext_password_form)
         
@@ -176,14 +101,12 @@ def register():
 
 
 from app.auth.forms import LoginForm
-
 @auth.route("/login",methods = ['POST', 'GET'])
 def login():
-    # if the user is logged in make it so they can't go to the login page. 
     if current_user.is_authenticated:
         return redirect(url_for('auth.home')) 
-
     form = LoginForm()
+    # seperate the username_or_email_form into username from db or email from db called user_db 
     if form.validate_on_submit():
         username_or_email_form = form.username_or_email.data
         username_db = User.query.filter_by(username=username_or_email_form).first()                
@@ -192,46 +115,28 @@ def login():
         if username_db:
             if username_db.username == username_or_email_form:
                 user_db = username_db
-        
-
         elif email_db:
             if email_db.email == username_or_email_form:
-                user_db = email_db
-        
-           
+                user_db = email_db           
         else:
             flash('username or email do not exist')
             return redirect(url_for('auth.login')) 
                 
-
         plaintext_password_form = form.password.data
-            
         registration_confirmation_email = user_db.registration_confirmation_email
         if registration_confirmation_email == False:
             flash('You have almost registered successfully. Please click the link in your email to complete the registeration.')
             return redirect(url_for('auth.login'))
-        # checks if an hashed_password is not an empty field + matches hashed password in db. 
-        hashed_password_db = user_db.hashed_password
-            #todo delete
-            #plaintext_password_form2 = 'wrong_string'
-            #plaintext_password_form2 = plaintext_password_form.encode('utf-8')
-            #if str(plaintext_password_form) == 'dsssssssssssssssssss':
-            #    flash(plaintext_password_form)
-            #    flash('the password is not a string')
-            #    return redirect(url_for('auth.login'))
-        
-            # hash the password    
-            
-                
+        # checks if an hashed_password is not an empty field + matches hashed_password in db. 
+        hashed_password_db = user_db.hashed_password                
         user_db.compare_hashed_passwords(hashed_password_db, plaintext_password_form)
     
       
 
 
 
-
-            # login_user(user, remember=form.remember.data)
-        login_user(user_db)
+        # remember me makes you logged in 
+        login_user(user_db, remember=True)
         flash('You have logged in successfully') 
         '''           
                     
@@ -264,35 +169,15 @@ def login():
     return render_template('login.html', title='login', form=form)
 
 
+from app.auth.forms import SearchForm 
 
-
-
-
- 
-
- 
-
-from app.auth.forms import SearchForm
-
-
-
-
-
-
- 
 @auth.route('/search', methods= ['GET', 'POST'])
 def search():  
-    form = SearchForm()
-
-
-    
+    form = SearchForm()    
     if form.validate_on_submit():
- 
         post_searched_form = form.searched.data
         #  "like" returns search results that are similar to the search form What does '%' do ?
         search_results = Posts.query.filter(Posts.content.like('%' + post_searched_form + '%')).order_by(Posts.title).all()
-  
-
         return render_template('search.html', form=form, search_results=search_results)
     else:
         return redirect(url_for('auth.home'))

@@ -1,12 +1,15 @@
-
 # Register forms 
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, SubmitField, validators
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length, EqualTo
 
 
 class RequestResetPasswordForm(FlaskForm):
+    '''
+    This is in the /request_reset_password route
+    The form is the email
+    '''
     
     email = EmailField('Email', validators=
     [
@@ -14,33 +17,35 @@ class RequestResetPasswordForm(FlaskForm):
     # Is the line below useful
     Length(min=4, max=25, message='Must be between 4 and 25 characters'),
     ])
-       
+    submit = SubmitField('Submit')   
  
 class EmptyForm(FlaskForm):
     pass 
 
 
 class ResetPasswordForm(FlaskForm):
+    '''
+    This is in the /reset_password/<token> route
+    The forms are password and confirm_password
+    '''
+    
+
     password = PasswordField('Password', 
     [
         DataRequired('Email is required'),
-        validators.Length(min=4, max=25)
+        validators.Length(min=4, max=25),
+        EqualTo('confirm_password', message='The password field is not equal to the confirm password field')
     ]) 
-    
+    submit = SubmitField('Submit')
+ 
     
     confirm_password = PasswordField('Password', 
     [
         DataRequired('Email is required'),
         validators.Length(min=4, max=25)
     ]) 
-    
+    submit = SubmitField('Submit')
 
-    '''
-    # check if the email does not exist so you can throw an error 
-    def validate (self, email):
-        email = User.query.filter_by(email=email.data.first())
-        # is None just checks if it is none
-        if email is None: 
-            raise ValidationError ("You have entered a email that does not exist. Please register a valid email.")
-    ''' 
+
+     
 

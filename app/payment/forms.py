@@ -1,13 +1,9 @@
-# Register forms 
 from flask_wtf import FlaskForm
-
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length
 
-
 class EmptyForm(FlaskForm):
     pass 
-
 
 class EmailForm(FlaskForm):
     
