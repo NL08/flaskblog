@@ -1,10 +1,13 @@
-import os
 # random number generator
 import uuid
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+
+
+
 ''' 
 # todo turn into a database why is there no post number like 1st post ever posted in general etc?
 posts = {   
@@ -28,15 +31,14 @@ from app import db, app
 from app.auth.forms import FileForm
 from app.models import Posts, User
 
+
 @auth.route('/profile/<string:username>', methods = ['GET'])
 def profile(username): 
 
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('profile.html', title='profile',user=user)
 
-
-# I might want to use this route below and the .html name?
-# @auth.route('/upload/profile/<string:username>', methods = ['GET'])
+import os
 @auth.route('/upload_picture', methods=['GET', 'POST'])
 def upload_picture():
     if not current_user.is_authenticated:
@@ -55,7 +57,7 @@ def upload_picture():
         db.session.add(upload)
         db.session.commit()
         # save file to a secure location
-        picture_filename.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))   
+        picture_filename.save((os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)))  
         flash("You have succesfully uploaded your profile picture.")
         return redirect(url_for('auth.profile', username=current_user.username)) # double check this
 

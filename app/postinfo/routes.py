@@ -26,7 +26,7 @@ def new_post():
         db.session.commit()          
         flash('You have posted successfully') 
         # redirect to the post after complete because you want to see the posted post. 
-        return redirect('auth.home')
+        return redirect(url_for('auth.home'))
     return render_template('new_post.html',title='new post', form=form)
 
 
@@ -64,7 +64,7 @@ def edit_post(post_id):
         # add/edit the current forms in the db
         title_form = form.title.data
         content_form = form.content.data 
-        posts = Posts(title=title_form, content=content_form ,user_id=current_user.id)
+        posts = Posts(title=title_form, content=content_form ,fk_user_id=current_user.id)
         db.session.add(posts)  
         db.session.commit()
         flash('You have edited your post successfully')

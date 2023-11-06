@@ -38,7 +38,6 @@ class PaymentsTest(db.Model):
     email = db.Column(db.String(120))     
     fk_usertest_id = db.Column(db.Integer, db.ForeignKey('user_test.id'))
     bind_key = "testing_app_db"
-
     # what does this do?
     def __repr__(self):
         return f"<PaymentsTest('{self.email}')>" 

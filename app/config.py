@@ -1,6 +1,5 @@
 # used in production config
 # REMEMBER_COOKIE_SECURE = True
-
 import os
 import stripe
 # This gives the path the current folder is in. This is an absolute import. 
@@ -38,7 +37,7 @@ class Config(object):
     # logs you in for 6 min after closing the browser 
     REMEMBER_COOKIE_DURATION = timedelta(seconds=360)
 
-
+from pathlib import Path
 
 class DevelopmentConfig(Config):    
     # should it be False? NO.
@@ -59,7 +58,8 @@ class DevelopmentConfig(Config):
     MAIL_ASCII_ATTACHMENTS = False 
     # Used to save to the uploaded folder 
     # UPLOAD_FOLDER = r"C:\Users\user\OneDrive\Desktop\flaskcodeusethis\flaskblog2\app\static\profilepictures"
-    UPLOAD_FOLDER = os.path.abspath(base_directory + "\app\static\profilepictures")
+    #UPLOAD_FOLDER = os.path.abspath(base_directory + r"\app\static\profilepictures")
+    UPLOAD_FOLDER = Path.cwd().joinpath("app", "static", "profilepictures")
     # max a file can be is 1 megabyte is that big enough? Todo add warning
     MAX_CONTENT_LENGTH = 1024 * 1024
     CKEDITOR_PKG_TYPE = 'standard'

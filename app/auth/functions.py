@@ -1,5 +1,4 @@
 # functions for routes.py 
-from flask import flash
 from wtforms.validators import ValidationError
 
 def make_password_contain_capital(form, field):
@@ -79,8 +78,8 @@ def check_if_username_not_in_db(form, field):
     if User.query.filter_by(username=field.data).first():
         raise ValidationError('The username is already taken. Please select another username for registration.') # okay wording?  
     else: 
-        flash('Success the username is not taken and you can successfully register.')
-        return None
+        print('Success the username is not taken and you can successfully register.')
+        return 'success'
 
 
 def check_if_email_not_in_db(form, field):    
@@ -92,8 +91,8 @@ def check_if_email_not_in_db(form, field):
     if User.query.filter_by(email=field.data).first():
         raise ValidationError('The email is already taken. Please select another username for registration.') # okay wording?  
     else: 
-        flash('Success the email is not taken and you can successfully register.')
-        return None
+        print('Success the email is not taken and you can successfully register.')
+        return 'success'
     
 # login functions
 # Don't check passwords seperatly for security reasons!

@@ -47,10 +47,11 @@ def verified_email(token):
     if user_db.registration_confirmation_email == True:
         flash('You have already clicked on the confirmation email. You can now login')
         return redirect(url_for('auth.home'))  
-
+    
     user_db.registration_confirmation_email = True 
-    true_value_registration_confirmation_email = True
-    db.session.add(true_value_registration_confirmation_email)
+    true_boolean = user_db.registration_confirmation_email
+    adding_true_boolean = User(registration_confirmation_email=true_boolean)
+    db.session.add(adding_true_boolean)
     db.session.commit()
     
     form = EmptyForm()
