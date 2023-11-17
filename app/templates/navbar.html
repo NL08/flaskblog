@@ -1,13 +1,13 @@
  
 <!-- todo turn into an linked button -->
 <h2> <a href="{{ url_for ('payment.donations') }}">Click Here to donate </a></h2>
-<h2> <a href="{{ url_for ('auth.home') }}">home </a></h2>
-<h2> <a href="{{ url_for ('auth.about') }}">about </a> </h2> 
+<h2> <a href="{{ url_for ('main.home') }}">home </a></h2>
+<h2> <a href="{{ url_for ('main.about') }}">about </a> </h2> 
 
     {% if current_user.is_authenticated %}
         <h2> <a href="{{ url_for ('auth.logoff') }}">logoff </a> </h2>
         <h2> <a href="{{ url_for ('postinfo.new_post')}}">new_post </a></h2>
-        <h2> <a href="{{ url_for ('auth.profile', username = current_user.username) }}"> profile</a> </h2>
+        <h2> <a href="{{ url_for ('main.profile', username = current_user.username) }}"> profile</a> </h2>
     <!-- if  current user not logged on -->
     {% else %}
         <h2> <a href="{{ url_for ('auth.login') }}">login </a> </h2>

@@ -1,13 +1,14 @@
 # Register forms 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileField, FileRequired
-from wtforms import PasswordField, StringField, SubmitField  
-from wtforms.fields.simple import FileField
-from wtforms.validators import DataRequired, Length, EqualTo
-from app.auth.functions import(check_if_username_not_in_db, check_if_email_not_in_db,
-make_password_contain_capital, make_password_contain_number,
-make_password_contain_special_characters)
- 
+from wtforms import PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Length
+
+from app.auth.functions import (check_if_email_not_in_db,
+                                check_if_username_not_in_db,
+                                make_password_contain_capital,
+                                make_password_contain_number,
+                                make_password_contain_special_characters)
+
 
 class RegistrationForm(FlaskForm):
     '''
@@ -49,6 +50,8 @@ class RegistrationForm(FlaskForm):
 
  
 from app.auth.functions import check_if_username_or_email_is_in_db
+
+
 class LoginForm(FlaskForm):
     '''
     This is in /Login route.
@@ -67,17 +70,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
   
 
-class UpdateAccountForm(FlaskForm):
-    password = PasswordField('password', validators=
-    [
-    DataRequired(message='Password is required'), 
-    Length(min=8, max=25, message='Must be between 8 and 25 characters'),
-    ])
-    confirm_password = PasswordField('Repeat Password', validators=
-    [
-    DataRequired(message='Does not match password')
-    ])
-    submit = SubmitField('Submit')
+ 
 
 class EmptyForm(FlaskForm):
     '''This is in the /followers routes '''
@@ -87,24 +80,8 @@ class EmptyForm(FlaskForm):
 
 
 
-# todo move later
-class FileForm(FlaskForm): 
-    '''
-    This is in /update_form route.
-    The form is image_filename.
-    '''
-    image_filename = FileField('image_filename', 
-    validators=
-    [FileRequired() ,FileAllowed(['jpg', 'png'], message='Images only!')  ])
-    submit = SubmitField('Submit')
 
 
 
- 
-class SearchForm(FlaskForm):
-    '''
-    This is in the '/search' route.
-    The form is searched.
-    '''   
-    searched = StringField("Searched", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+
+

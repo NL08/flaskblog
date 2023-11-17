@@ -1,82 +1,22 @@
-# random number generator
-import uuid
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.urls import url_parse
-from werkzeug.utils import secure_filename
-from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-
-
-
-''' 
-# todo turn into a database why is there no post number like 1st post ever posted in general etc?
-posts = {   
-    "username": "author",
-    "author": "Bobby Bobson",
-    "Title": "Hello World",
-    "Content": "This is a post content 1",
-    "date_posted": "March 17 2021" 
-}
-'''
 auth = Blueprint('auth', __name__, template_folder='templates')
-
-@auth.route("/")
-@auth.route("/home")
-def home():  
-    posts = Posts.query.all()
-    return render_template('home.html', posts=posts, title='home')  
-
-# import db from flaskblog __init__.py.
-from app import db, app
-from app.auth.forms import FileForm
-from app.models import Posts, User
-
-
-@auth.route('/profile/<string:username>', methods = ['GET'])
-def profile(username): 
-
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('profile.html', title='profile',user=user)
-
-import os
-@auth.route('/upload_picture', methods=['GET', 'POST'])
-def upload_picture():
-    if not current_user.is_authenticated:
-        return redirect(url_for('auth.home')) 
-    
-    form = FileForm()
-    if form.validate_on_submit():
-        picture_filename = form.image_filename.data     
-        # Make file secure...         
-        # This makes sure the filename is safe
-        filename_is_secure = secure_filename(picture_filename.filename)
-        # make the file unique incase someone uploads the same name
-        # uuid is a random number generator
-        unique_filename = str(uuid.uuid1()) + filename_is_secure
-        upload = User(profile_pic_name=unique_filename)
-        db.session.add(upload)
-        db.session.commit()
-        # save file to a secure location
-        picture_filename.save((os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)))  
-        flash("You have succesfully uploaded your profile picture.")
-        return redirect(url_for('auth.profile', username=current_user.username)) # double check this
-
-    return render_template('upload_picture.html', form=form, title='upload Profile Picture') 
-
- 
-@auth.route("/about")
-def about():
-    return render_template('about.html', title='register')
-
-from app.auth.forms import RegistrationForm
 from argon2 import PasswordHasher
-from app.mail.routes import send_account_registration_email  
+
+# import db from __init__.py.
+from app import db
+from app.auth.forms import RegistrationForm
+from app.mail.routes import send_account_registration_email
+from app.models import User
+
 
 @auth.route("/register", methods = ['POST', 'GET'])
 def register():
     # if the user is logged in make so they can't go to the register page. 
     if current_user.is_authenticated:
-        return redirect(url_for(('auth.home')))
+        return redirect(url_for(('main.home')))
     
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -93,7 +33,7 @@ def register():
         db.session.add(adding_user)
         db.session.commit()
                 
-        user_db = User.query.filter_by(username=username_form).first()
+        user_db = db.session.execute(db.select(User).filter_by(username=username_form)).scalar_one_or_none()
         send_account_registration_email(user_db) 
         flash('You have almost registered successsfully. Please click the link in your email to complete the registeration.')                
             
@@ -103,16 +43,19 @@ def register():
 
 
 from app.auth.forms import LoginForm
+
+from app.auth.functions import compare_hashed_passwords
+
 @auth.route("/login",methods = ['POST', 'GET'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('auth.home')) 
+        return redirect(url_for('main.home')) 
     form = LoginForm()
     # seperate the username_or_email_form into username from db or email from db called user_db 
     if form.validate_on_submit():
         username_or_email_form = form.username_or_email.data
-        username_db = User.query.filter_by(username=username_or_email_form).first()                
-        email_db = User.query.filter_by(email=username_or_email_form).first() 
+        username_db = db.session.execute(db.select(User).filter_by(username=username_or_email_form)).scalar_one_or_none()            
+        email_db = db.session.execute(db.select(User).filter_by(email=username_or_email_form)).scalar_one_or_none()
 
         if username_db:
             if username_db.username == username_or_email_form:
@@ -121,7 +64,7 @@ def login():
             if email_db.email == username_or_email_form:
                 user_db = email_db           
         else:
-            flash('username or email do not exist')
+            flash('The username or email or password do not exist. Please retype your username or email or password.')
             return redirect(url_for('auth.login')) 
                 
         plaintext_password_form = form.password.data
@@ -131,13 +74,11 @@ def login():
             return redirect(url_for('auth.login'))
         # checks if an hashed_password is not an empty field + matches hashed_password in db. 
         hashed_password_db = user_db.hashed_password                
-        user_db.compare_hashed_passwords(hashed_password_db, plaintext_password_form)
-    
-      
-
-
-
-        # remember me makes you logged in 
+        checking_hashed_password = compare_hashed_passwords(hashed_password_db, plaintext_password_form)
+        if checking_hashed_password == False:
+            flash('The username or email or password do not exist. Please retype your username or email or password.')
+            return redirect(url_for('auth.login'))
+        # remember me makes you logged in for a certain time
         login_user(user_db, remember=True)
         flash('You have logged in successfully') 
         '''           
@@ -165,32 +106,19 @@ def login():
         # does this check the current route?
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('auth.home')
+            next_page = url_for('main.home')
         return redirect(next_page)
 
     return render_template('login.html', title='login', form=form)
 
 
-from app.auth.forms import SearchForm 
-
-@auth.route('/search', methods= ['GET', 'POST'])
-def search():  
-    form = SearchForm()    
-    if form.validate_on_submit():
-        post_searched_form = form.searched.data
-        #  "like" returns search results that are similar to the search form What does '%' do ?
-        search_results = Posts.query.filter(Posts.content.like('%' + post_searched_form + '%')).order_by(Posts.title).all()
-        return render_template('search.html', form=form, search_results=search_results)
-    else:
-        return redirect(url_for('auth.home'))
 
  
 @auth.route("/logoff")
 @login_required
 def logoff():
     logout_user()
-    return redirect(url_for('auth.home'))
+    return redirect(url_for('main.home'))
                   
 
 
- 

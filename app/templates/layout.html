@@ -26,11 +26,11 @@
     {% include 'navbar.html' %}
 
     <h2>
-         <!-- action=, sends you to /search route -->
-        <form method="POST" action="{{ url_for('auth.search') }}"> 
+         <!-- action=, sends you to /search route when clicked on -->
+        <form method="POST" action="{{ url_for('main.search') }}"> 
             {{ form.csrf_token }}  
-            {{ (form.searched) }}   
-            <button type="submit">search</button>
+            {{ form.searched }}   
+            {{ form.submit }} 
         </form>    
        
     </h2>

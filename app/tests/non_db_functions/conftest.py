@@ -1,5 +1,6 @@
 import pytest
-from wsgi import app
+from app.app import app
+
 
 @pytest.fixture
 def client():

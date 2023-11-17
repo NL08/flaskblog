@@ -1,11 +1,13 @@
 import os, pytest
 
+
 @pytest.fixture
 def username_form():    
     username = 'fkpr[kfkuh'
     return username
 
 from argon2 import PasswordHasher
+
 
 @pytest.fixture
 def hashed_password_form():    
@@ -33,7 +35,7 @@ def price_of_donation_form():
 
 from app import db
 from app.tests.models import PaymentsTest, UserTest
-from wsgi import app
+from app.app import app
 
 @pytest.fixture
 def yield_email_db(): 

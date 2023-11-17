@@ -7,6 +7,16 @@ from app import db
 from app.models import Posts, User
 from app.postinfo.forms import Emptyform, Postform
 
+''' 
+# todo turn into a database why is there no post number like 1st post ever posted in general etc?
+posts = {   
+    "username": "author",
+    "author": "Bobby Bobson",
+    "Title": "Hello World",
+    "Content": "This is a post content 1",
+    "date_posted": "March 17 2021" 
+}
+'''
 postinfo = Blueprint('postinfo', __name__, template_folder='templates')
 
 @postinfo.route("/post/new", methods = ['POST', 'GET'])
@@ -19,14 +29,14 @@ def new_post():
         content_form = form.content.data
         date_posted_form = datetime.now()
         # user.id is used in the FK in the Post database. You need to manually add FK's.   
-        user_db = User.query.filter_by(username=current_user.username).first()
+        user_db = db.session.execute(db.select(User).filter_by(username=current_user.username)).scalar_one_or_none()
         user_db_id = user_db.id
         posts = Posts(title=title_form, content=content_form, date_posted=date_posted_form, fk_user_id=user_db_id )  
         db.session.add(posts)  
         db.session.commit()          
         flash('You have posted successfully') 
         # redirect to the post after complete because you want to see the posted post. 
-        return redirect(url_for('auth.home'))
+        return redirect(url_for('main.home'))
     return render_template('new_post.html',title='new post', form=form)
 
 
@@ -35,8 +45,7 @@ def new_post():
 # get the unique post from the post id
 @postinfo.route("/post/<int:post_id>", methods = ['POST', 'GET'])
 def post(post_id):
-     
-    post = Posts.query.get_or_404(post_id)
+    post = db.get_or_404(Posts, post_id)
     post_id = post.id
     form = Emptyform()    
     # Do I need to pass on post_id 
@@ -53,7 +62,7 @@ def post(post_id):
 @login_required
 def edit_post(post_id): 
     # get request
-    post_db = Posts.query.get_or_404(post_id) 
+    post_db = db.get_or_404(Posts, post_id)
     form = Postform()
     if form.validate_on_submit():
         # delete the current columns in db
@@ -68,7 +77,7 @@ def edit_post(post_id):
         db.session.add(posts)  
         db.session.commit()
         flash('You have edited your post successfully')
-        return redirect(url_for('auth.home'))
+        return redirect(url_for('main.home'))
       # put this below the if statement so for ex "form.title.data" doesn't interfere with above ex "form.title.data
     elif request.method == 'GET':        
        
@@ -89,12 +98,12 @@ def edit_post(post_id):
 @login_required
 def delete_post(post_id): 
     if request.method == 'POST':       
-        post_db = Posts.query.get_or_404(post_id)   
+        post_db = db.get_or_404(Posts, post_id) 
         delete_post = post_db
         db.session.delete(delete_post)
         db.session.commit()
         flash('You have deleted your post')
-        return redirect(url_for('auth.home'))
+        return redirect(url_for('main.home'))
     
 
 

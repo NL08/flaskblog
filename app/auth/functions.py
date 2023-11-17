@@ -1,6 +1,7 @@
 # functions for routes.py 
 from wtforms.validators import ValidationError
 
+
 def make_password_contain_capital(form, field):
     '''
     This works if the password contains a capital Char 
@@ -60,13 +61,17 @@ def make_password_contain_special_characters(form, field):
       raise ValidationError("Please include a special character in the password field")
          
     
-from app import app
-# allow different imports so the code works during pytest + None pytest
-if app.config['ENV'] == 'development':
-    from app.models import User  
-elif app.config['ENV'] == 'pytest': 
-    from app.tests.models import UserTest as User 
+import os
 
+current_config = os.environ['FLASK_ENV']
+# allow different imports so the code works during pytest + None pytest
+if os.environ['FLASK_ENV']  == 'dev':
+    from app.models import User  
+elif os.environ['FLASK_ENV'] == 'test': 
+    from app.tests.models import UserTest as User 
+   
+     
+from app import db        
 
 def check_if_username_not_in_db(form, field):    
     '''
@@ -75,7 +80,8 @@ def check_if_username_not_in_db(form, field):
     This runs in the RegistrationForm in  username column
     '''
 
-    if User.query.filter_by(username=field.data).first():
+
+    if db.session.execute(db.select(User).filter_by(username=field.data)).scalar_one_or_none():
         raise ValidationError('The username is already taken. Please select another username for registration.') # okay wording?  
     else: 
         print('Success the username is not taken and you can successfully register.')
@@ -88,7 +94,7 @@ def check_if_email_not_in_db(form, field):
     if not it raises an ValidationError.
     This runs in the RegistrationForm in auth/forms.py
     '''
-    if User.query.filter_by(email=field.data).first():
+    if db.session.execute(db.select(User).filter_by(email=field.data)).scalar_one_or_none():
         raise ValidationError('The email is already taken. Please select another username for registration.') # okay wording?  
     else: 
         print('Success the email is not taken and you can successfully register.')
@@ -106,11 +112,24 @@ def check_if_username_or_email_is_in_db(form, field):
   
  
     # if empty list [] return True 
-    if not User.query.filter_by(username=field.data).first() and not User.query.filter_by(email=field.data).first(): 
-        raise ValidationError('The username or email does not exist. Please retype your username or email.')   
+    if not db.session.execute(db.select(User).filter_by(username=field.data)).scalar_one_or_none() and not db.session.execute(db.select(User).filter_by(email=field.data)).scalar_one_or_none():
+        raise ValidationError('The username or email or password do not exist. Please retype your username or email or password.')   
      
+from argon2 import PasswordHasher
 
-
+def compare_hashed_passwords(hashed_password_db, plaintext_password_form):
+    '''   
+    The code runs in the /login route.
+    Compares the hashed_password in the db and plaintext password form.
+    ph.verify(...) returns True if True and raises a validation error if False.  
+    You don't want to raise a validation error in flask unless in wtf forms.
+    '''
+    ph = PasswordHasher()
+    try:
+        verified_hashed_password = ph.verify(hashed_password_db, plaintext_password_form)
+        return verified_hashed_password
+    except:
+        return False
 
 
 # function list 
@@ -126,6 +145,9 @@ check_if_email_not_in_db
 
 (login functions)
 check_if_username_or_email_is_in_db
+
+(Not a validator function)
+compare_hashed_passwords
 ''' 
  
 

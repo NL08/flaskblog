@@ -7,18 +7,17 @@
 1. Clone the project
 2. Create the environment variables.
 3. Install python and conda and import the environment.yml file. Also in VSC download the python extension and setup the conda env.
-4. create the db by follwing the link here [https://flask-migrate.readthedocs.io/en/latest/]
-5. To run the code in the CLI follow this link [https://flask.palletsprojects.com/en/1.1.x/cli/] 
+4. create the db by following the link here [https://flask-migrate.readthedocs.io/en/latest/]
+5. To run the code in the CLI follow this link [https://flask.palletsprojects.com/en/2.3.x/cli/] 
 
-For example on windows in VSC type in terminal
+For example on windows and powershell in VSC type 
 
-> $env:FLASK_APP="wsgi"    
-> $env:FLASK_ENV="development"      
-> flask run 
-6. To run pytest on windows in VSC type 
+> $env:FLASK_DEBUG='True'              
+> $env:FLASK_ENV='dev'
+> flask --app app run
 
-> $env:FLASK_APP="wsgi"    
-> $env:FLASK_ENV="pytest"      
+6. To run pytest on windows and powershell in VSC type    
+> $env:FLASK_ENV='test'      
 > pytest -q --capture=no  
 
 ## There are a few bugs and minor errors. I am fixing them and I cleaning up the code I also need to add css and improve the html. ##

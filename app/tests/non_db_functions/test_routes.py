@@ -1,4 +1,5 @@
-from wsgi import app
+from app.app import app
+
 
 def test_register_page_get(client):
     '''

@@ -1,7 +1,9 @@
 # itsdangergous... gives a time sensitive message 
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 from app import db
+
 
 class UserTest(UserMixin, db.Model):
     __tablename__ = 'user_test'
@@ -23,6 +25,12 @@ class UserTest(UserMixin, db.Model):
         s = Serializer (SECRET_KEY, expires_sec) 
         # This Creates the randomly assigned token for 30 min. This is a string.
         return s.dumps({'Users_id': self.id}).decode('utf-8')
+    
+    def __repr__(self):
+        return f"<UserTest('{self.email}')>" 
+ 
+
+
             
 class PaymentsTest(db.Model):
     '''
@@ -36,7 +44,7 @@ class PaymentsTest(db.Model):
     price_of_donation = db.Column(db.Integer)
     # How do I turn email into the foreign key? todo.
     email = db.Column(db.String(120))     
-    fk_usertest_id = db.Column(db.Integer, db.ForeignKey('user_test.id'))
+    fk_user_id = db.Column(db.Integer, db.ForeignKey('user_test.id'))
     bind_key = "testing_app_db"
     # what does this do?
     def __repr__(self):

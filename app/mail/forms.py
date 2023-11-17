@@ -2,7 +2,7 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, SubmitField, validators
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, EqualTo, Length
 
 
 class RequestResetPasswordForm(FlaskForm):

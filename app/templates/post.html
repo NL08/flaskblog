@@ -20,7 +20,7 @@
         {% endif %} 
                 <!-- /post route -->                    
                 <!-- click on profile -->
-                <h2> <a href="{{ url_for ('auth.profile', username=post.profileinfo.username) }}">  {{ (post.profileinfo.username) }} </a> </h2>                                                 
+                <h2> <a href="{{ url_for ('main.profile', username=post.profileinfo.username) }}">  {{ (post.profileinfo.username) }} </a> </h2>                                                 
                 {{ (post.title) }}
                 {{ (post.content) }} 
                 {{ (post.date_posted) }}                     

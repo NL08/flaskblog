@@ -1,9 +1,13 @@
-from app.auth.functions import make_password_contain_capital, make_password_contain_number
-from wsgi import app
-from app.auth.forms import LoginForm
-from wtforms.validators import ValidationError
+from collections import namedtuple
+
 import pytest
-from collections import namedtuple 
+from app.app import app
+from wtforms.validators import ValidationError
+
+from app.auth.forms import LoginForm
+from app.auth.functions import (make_password_contain_capital,
+                                make_password_contain_number)
+
 
 # form=field and should not return a validation error when used in a function
 @pytest.fixture

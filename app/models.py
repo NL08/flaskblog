@@ -1,11 +1,9 @@
-# from flaskblog folder in __init__.py
 from datetime import datetime
-from flask import flash, redirect, url_for
+from flask import flash
 from flask_login import UserMixin
 # itsdangergous... gives a time sensitive message 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from app import db
-from argon2 import PasswordHasher
 
 class User(UserMixin, db.Model):
     '''
@@ -26,21 +24,6 @@ class User(UserMixin, db.Model):
     # The value of backref allows to get a value from the other table?
     rel_posts = db.relationship('Posts', backref='profileinfo', lazy=True)
     rel_payments = db.relationship('Payments', backref='profileinfo', lazy=True)       
- 
-    def compare_hashed_passwords(self, hashed_password_db, plaintext_password_form):
-        '''   
-        The code runs in the /login route.
-        Query the db for the hashed_password. 
-        If not the value will be a different hash and the function ph.verify will return False even 
-        if password_form is the same as in the register route.
-        '''
-        ph = PasswordHasher()
-        try:
-            self.verified_hashed_password = ph.verify(hashed_password_db, plaintext_password_form)
-            return self.verified_hashed_password
-        except:
-            flash('The password does not exist in the db.')
-            return redirect(url_for('auth.home')) # line have to redirect can it be a validation error? 
 
 
 
@@ -57,16 +40,17 @@ class User(UserMixin, db.Model):
         SECRET_KEY = 'temp_secret_key'
         # Serializer passes in SECRET_KEY
         s = Serializer(SECRET_KEY)
-
         try:
-            # s.loads(token) gets the User's id by running
+            # s.loads(token) gets the User's id by running the code below
             users_id = s.loads(token)['users_id']   
         except:
             flash('This is an invalid or expired token') 
-            # Why query.get? Because  "u = User.query.get(1)" gives the current user.
             return None
-        return User.query.get(users_id)    
-    
+        # gives the current user.
+        user_db = db.session.execute(db.select(User).filter_by(id=users_id)).scalar_one_or_none()
+        user_db = user_db
+        return user_db
+   
     # what does this do?
     def __repr__(self):
         return f"User('{self.email}')" 
@@ -120,9 +104,4 @@ class Payments(db.Model):
         return f"Payments('{self.email}')" 
     
 
-    '''
-    Uselist=False creates a one to one relationship instead of a 1 to many when using a foreign key etc
-    relationship creates a connection between the foreign key table and the primary key table 
-    is it okay as the same name as the table?
-    Here is an example.
-    '''
+   

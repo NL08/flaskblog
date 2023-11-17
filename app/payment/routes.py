@@ -1,10 +1,13 @@
 import stripe
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from app.payment.forms import EmailForm, EmptyForm  
+
+from app.payment.forms import EmailForm, EmptyForm
+
 payment = Blueprint('payment', __name__, template_folder='templates')
-# import db from flaskblog folder in __init__.py.
+# import db from  folder in __init__.py.
 from app import db
 from app.models import Payments
+
 '''
 # This is before the table was created.
 products = {
@@ -16,6 +19,8 @@ products = {
 }
 '''
 from app.payment.functions import add_foreign_key
+
+
 @payment.route('/donations', methods = ['POST', 'GET'])
 def donations():
     
@@ -45,8 +50,8 @@ def donations():
 
 @payment.route('/order/<item_name_db>', methods=['POST'])
 def order(item_name_db):
-
-    payment_db = Payments.query.filter_by(item_name=item_name_db).first_or_404()
+    
+    payment_db = db.one_or_404(db.select(Payments).filter_by(item_name=item_name_db))
     '''
     you can only purchase one product at a time, but since line_items is a list, 
     you can select and buy multiple products if you add a shopping cart interface
