@@ -16,7 +16,7 @@
         
         <!-- if the user clicks on there own profile they can add an image then they can view an image -->
         {% if current_user.is_authenticated and current_user.username == user.username %} 
-                <a href="{{ url_for('auth.upload_picture') }}"> <button> update or add profile picture </button> </a>
+                <a href="{{ url_for('main.upload_picture') }}"> <button> update or add profile picture </button> </a>
         
         {% endif %} 
         <!-- if the user has added a profile image. -->

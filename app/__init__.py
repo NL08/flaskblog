@@ -38,6 +38,20 @@ from app.config import DevelopmentConfig, PytestConfig
 def create_app(): 
     # The function name is from the config file which is "Class config:".
     app = Flask(__name__)
+    
+    from app.main.forms import SearchForm
+    @app.context_processor
+    def layout():
+        '''
+        Pass Stuff to Navbar such as a form in layout.html from search.html
+            
+        If I don't pass on the form in base function then I will 
+        get an error in layout.html because of {{form.csrf_token}} 
+        ''' 
+        # The variable name is "searchform" and not "form" because in the html I would have 2 "form" variables
+        searchform = SearchForm()
+        return dict(searchform=searchform) 
+    
     current_config = os.environ['FLASK_ENV']
     if current_config == 'dev':
         app.config.from_object(DevelopmentConfig)

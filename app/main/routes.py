@@ -8,13 +8,13 @@ from app.models import Posts, User
 
 main = Blueprint('main', __name__, template_folder='templates')
 
-from app.auth.forms import EmptyForm
+ 
 
 @main.route("/")
 @main.route("/home")
 def home():  
     posts = db.session.scalars(db.select(Posts)).all()
-    return render_template('home.html', posts=posts, title='home', form=EmptyForm)  
+    return render_template('home.html', posts=posts, title='home')  
 
 @main.route("/about")
 def about():
@@ -57,17 +57,16 @@ def upload_picture():
 
 
 from app.main.forms import SearchForm
-
-
 @main.route('/search', methods= ['GET', 'POST'])
 def search():  
-    form = SearchForm()    
-    if form.validate_on_submit():
-        post_searched_form = form.searched.data
+    # The variable name is "searchform" and not "form" because in the html I would have 2 "form" variables
+    searchform = SearchForm()    
+    if searchform.validate_on_submit():
+        post_searched_form = searchform.searched.data
         #  "like" returns search results that are similar to the search form What does '%' do ?
         # how do I  modify the search_results
         search_results = Posts.query.filter(Posts.content.like('%' + post_searched_form + '%')).order_by(Posts.title).all()
-        return render_template('search.html', form=form, search_results=search_results)
+        return render_template('search.html', searchform=searchform, search_results=search_results)
     else:
         return redirect(url_for('main.home'))
 
